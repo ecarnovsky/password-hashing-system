@@ -1,5 +1,6 @@
+from hashing_algorithm import HashingAlgorithm
 class User:
-    def __init__(self, username, plain_text_password, hashing_algorithm, hashed_password, salt):
+    def __init__(self, username: str, plain_text_password: str, hashing_algorithm: HashingAlgorithm, hashed_password: str, salt: str):
         self.username = username
         self.plain_text_password = plain_text_password
         self.hashing_algorithm = hashing_algorithm
