@@ -13,7 +13,22 @@ class DatabaseConnection:
 
 
     def find_user(user):
-        print("")
+
+        con = sqlite3.connect("password-hashing.db")
+        cur = con.cursor()
+        res = cur.execute(f"SELECT * FROM user WHERE username='{user.username}'")
+
+        user_row = res.fetchone()
+
+        con.commit() 
+        con.close()
+
+        if user_row == None:
+            return None
+        else:  
+            return User(user_row[0], None, user_row[1], user_row[2], user_row[3])
+
+
 
 
     # This method is only used for initial setup
@@ -31,6 +46,7 @@ def tests():
     print("Test starting...")
     test_user = User('Cool$$32', 'password123', 'argon2', 'jhgftr5678uijhvcxdser56', 'jhgfd8')
     DatabaseConnection.add_user(test_user)
+    # print(DatabaseConnection.find_user(test_user))
     print("Test done.")
 
 
