@@ -1,7 +1,11 @@
 import hashlib
+from argon2 import PasswordHasher
+import bcrypt
 import os
 from database_connection import DatabaseConnection
 from user import User
+
+argon2_hasher = PasswordHasher()
 
 # Define functions
 def hash_md5(password):
@@ -11,9 +15,24 @@ def hash_sha512(password):
     return hashlib.sha512(password.encode()).hexdigest()
 
 def hash_pbkdf2(password):
-    salt = os.urandom(16)
+    salt = getSalt()
     hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 100000)
     return salt.hex() + hashed_password.hex()
+
+def hash_argon2(password):
+    hash_and_metadata =  argon2_hasher.hash(password)
+    hashed_password = hash_and_metadata.split('$')[-1]
+    return hashed_password
+
+
+def hash_bcrypt(password):
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).hex()
+
+def hash_scrypt(password):
+    return hashlib.scrypt(password.encode(), salt=getSalt(), n=16384, r=8, p=1).hex()
+
+def getSalt():
+    return os.urandom(16)
 
 # Main function
 def main():
@@ -70,6 +89,9 @@ def main():
             print("1. MD5")
             print("2. SHA-512")
             print("3. PBKDF2")
+            print("4. Argon2")
+            print("5. bcrypt")
+            print("6. scrypt")
             choice = input("Enter the number of the hashing algorithm: ")
 
             # Hash the password using the selected algorithm
@@ -79,6 +101,12 @@ def main():
                 hashed_password = hash_sha512(password)
             elif choice == '3':
                 hashed_password = hash_pbkdf2(password)
+            elif choice == '4':
+                hashed_password = hash_argon2(password)
+            elif choice == '5':
+                hashed_password = hash_bcrypt(password)
+            elif choice == '6':
+                hashed_password = hash_scrypt(password)
             else:
                 print("Invalid choice")
                 continue
@@ -122,6 +150,9 @@ def main():
                     print("1. MD5")
                     print("2. SHA-512")
                     print("3. PBKDF2")
+                    print("4. Argon2")
+                    print("5. bcrypt")
+                    print("6. scrypt")
                     choice = input("Enter the number of the hashing algorithm: ")
 
                     # Hash the password using the selected algorithm
@@ -131,6 +162,12 @@ def main():
                         hashed_password = hash_sha512(password)
                     elif choice == '3':
                         hashed_password = hash_pbkdf2(password)
+                    elif choice == '4':
+                        hashed_password = hash_argon2(password)
+                    elif choice == '5':
+                        hashed_password = hash_bcrypt(password)
+                    elif choice == '6':
+                        hashed_password = hash_scrypt(password)
                     else:
                         print("Invalid choice")
                         continue

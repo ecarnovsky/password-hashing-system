@@ -8,7 +8,10 @@ class DatabaseConnection:
     def add_user(user):
         con = sqlite3.connect(DatabaseConnection.DATABASE_NAME)
         cur = con.cursor()
-        cur.execute(f"INSERT INTO user VALUES ('{user.username}', '{user.hashing_algorithm}', '{user.hashed_password}', '{user.salt}')")
+        cur.execute(
+            "INSERT INTO user (username, hashing_algorithm, hashed_password, salt) VALUES (?, ?, ?, ?)",
+            (user.username, user.hashing_algorithm, user.hashed_password, user.salt)
+        )
         con.commit()
         con.close()
 
