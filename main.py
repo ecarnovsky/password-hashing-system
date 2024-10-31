@@ -83,9 +83,9 @@ def main():
                     print("Invalid choice, please try again.")
                     continue
 
-            hashing_algorithm = getAlgorithmChoice()
+            hashing_algorithm = get_algorithm_user_choice()
 
-            hashed_password = getHashedPassword(password, hashing_algorithm)
+            hashed_password = get_hashed_password(password, hashing_algorithm)
 
             # Insert or update the username and hashed password in the database
             new_user = User(username, password, hashing_algorithm.name, hashed_password, None)
@@ -122,9 +122,9 @@ def main():
             elif next_action == '3':
                 while True:
 
-                    hashing_algorithm = getAlgorithmChoice()
+                    hashing_algorithm = get_algorithm_user_choice()
 
-                    hashed_password = getHashedPassword(password, hashing_algorithm)
+                    hashed_password = get_hashed_password(password, hashing_algorithm)
 
                     # Update the password for the existing username in the database
                     new_user = User(username, password, hashing_algorithm.name, hashed_password, None)
@@ -138,7 +138,7 @@ def main():
                     break
 
 
-def getAlgorithmChoice():
+def get_algorithm_user_choice():
     while True:
         # Display a menu for selecting a hashing algorithm
         print("Select a hashing algorithm:")
@@ -156,7 +156,7 @@ def getAlgorithmChoice():
 
         return HashingAlgorithm(int(choice))
 
-def getHashedPassword(password: str, hashingAlgorithm: HashingAlgorithm):
+def get_hashed_password(password: str, hashingAlgorithm: HashingAlgorithm):
     if hashingAlgorithm == HashingAlgorithm.MD5:
         hashed_password = hash_md5(password)
     elif hashingAlgorithm == HashingAlgorithm.SHA512:
