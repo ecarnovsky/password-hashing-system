@@ -150,7 +150,7 @@ def get_algorithm_user_choice():
         print("6. scrypt")
         choice = input("Enter the number of the hashing algorithm: ")
 
-        if int(choice) > len(HashingAlgorithm) or int(choice) <= 0:
+        if not choice.isdigit() or int(choice) > len(HashingAlgorithm) or int(choice) <= 0:
             print("Invalid choice")
             continue
 
