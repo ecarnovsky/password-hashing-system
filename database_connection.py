@@ -19,7 +19,7 @@ class DatabaseConnection:
     def find_user(user):
         con = sqlite3.connect(DatabaseConnection.DATABASE_NAME)
         cur = con.cursor()
-        res = cur.execute(f"SELECT * FROM user WHERE username='{user.username}'")
+        res = cur.execute("SELECT * FROM user WHERE username=?", (user.username,))
         user_row = res.fetchone()
         con.commit()
         con.close()

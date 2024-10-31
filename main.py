@@ -5,7 +5,6 @@ import os
 from database_connection import DatabaseConnection
 from user import User
 
-argon2_hasher = PasswordHasher()
 
 # Define functions
 def hash_md5(password):
@@ -20,10 +19,10 @@ def hash_pbkdf2(password):
     return salt.hex() + hashed_password.hex()
 
 def hash_argon2(password):
+    argon2_hasher = PasswordHasher()
     hash_and_metadata =  argon2_hasher.hash(password)
     hashed_password = hash_and_metadata.split('$')[-1]
     return hashed_password
-
 
 def hash_bcrypt(password):
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).hex()
