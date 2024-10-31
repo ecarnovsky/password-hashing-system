@@ -153,8 +153,9 @@ def get_algorithm_user_choice():
         if not choice.isdigit() or int(choice) > len(HashingAlgorithm) or int(choice) <= 0:
             print("Invalid choice")
             continue
+        else:
+            return HashingAlgorithm(int(choice))
 
-        return HashingAlgorithm(int(choice))
 
 def get_hashed_password(password: str, hashingAlgorithm: HashingAlgorithm):
     if hashingAlgorithm == HashingAlgorithm.MD5:
