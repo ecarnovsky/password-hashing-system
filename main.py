@@ -4,6 +4,7 @@ import bcrypt
 import os
 from database_connection import DatabaseConnection
 from user import User
+from hashing_algorithm import HashingAlgorithm
 
 
 # Define functions
@@ -82,35 +83,12 @@ def main():
                     print("Invalid choice, please try again.")
                     continue
 
-            # Display a menu for selecting a hashing algorithm
-            print("Select a hashing algorithm:")
-            print("1. MD5")
-            print("2. SHA-512")
-            print("3. PBKDF2")
-            print("4. Argon2")
-            print("5. bcrypt")
-            print("6. scrypt")
-            choice = input("Enter the number of the hashing algorithm: ")
+            hashing_algorithm = getAlorithmChoice()
 
-            # Hash the password using the selected algorithm
-            if choice == '1':
-                hashed_password = hash_md5(password)
-            elif choice == '2':
-                hashed_password = hash_sha512(password)
-            elif choice == '3':
-                hashed_password = hash_pbkdf2(password)
-            elif choice == '4':
-                hashed_password = hash_argon2(password)
-            elif choice == '5':
-                hashed_password = hash_bcrypt(password)
-            elif choice == '6':
-                hashed_password = hash_scrypt(password)
-            else:
-                print("Invalid choice")
-                continue
+            hashed_password = getHashedPassword(password, hashing_algorithm)
 
             # Insert or update the username and hashed password in the database
-            new_user = User(username, password, choice, hashed_password, None)
+            new_user = User(username, password, hashing_algorithm.name, hashed_password, None)
             if found_user:
                 DatabaseConnection.add_user(new_user)
             else:
@@ -143,35 +121,13 @@ def main():
                 continue
             elif next_action == '3':
                 while True:
-                    # Display a menu for selecting a hashing algorithm
-                    print("Select a hashing algorithm:")
-                    print("1. MD5")
-                    print("2. SHA-512")
-                    print("3. PBKDF2")
-                    print("4. Argon2")
-                    print("5. bcrypt")
-                    print("6. scrypt")
-                    choice = input("Enter the number of the hashing algorithm: ")
 
-                    # Hash the password using the selected algorithm
-                    if choice == '1':
-                        hashed_password = hash_md5(password)
-                    elif choice == '2':
-                        hashed_password = hash_sha512(password)
-                    elif choice == '3':
-                        hashed_password = hash_pbkdf2(password)
-                    elif choice == '4':
-                        hashed_password = hash_argon2(password)
-                    elif choice == '5':
-                        hashed_password = hash_bcrypt(password)
-                    elif choice == '6':
-                        hashed_password = hash_scrypt(password)
-                    else:
-                        print("Invalid choice")
-                        continue
+                    hashing_algorithm = getAlorithmChoice()
+
+                    hashed_password = getHashedPassword(password, hashing_algorithm)
 
                     # Update the password for the existing username in the database
-                    new_user = User(username, password, choice, hashed_password, None)
+                    new_user = User(username, password, hashing_algorithm.name, hashed_password, None)
                     DatabaseConnection.add_user(new_user)
 
                     # Output the hashed password
@@ -180,6 +136,42 @@ def main():
 
                     # Ask the user if they want to log out, hash the password with a different algorithm, or change the password
                     break
+
+
+def getAlorithmChoice():
+    while True:
+        # Display a menu for selecting a hashing algorithm
+        print("Select a hashing algorithm:")
+        print("1. MD5")
+        print("2. SHA-512")
+        print("3. PBKDF2")
+        print("4. Argon2")
+        print("5. bcrypt")
+        print("6. scrypt")
+        choice = input("Enter the number of the hashing algorithm: ")
+
+        if int(choice) > len(HashingAlgorithm):
+            print("Invalid choice")
+            continue
+
+        return HashingAlgorithm(int(choice))
+
+def getHashedPassword(password: str, hashingAlgorithm: HashingAlgorithm):
+    if hashingAlgorithm == HashingAlgorithm.MD5:
+        hashed_password = hash_md5(password)
+    elif hashingAlgorithm == HashingAlgorithm.SHA512:
+        hashed_password = hash_sha512(password)
+    elif hashingAlgorithm == HashingAlgorithm.PBKDF2:
+        hashed_password = hash_pbkdf2(password)
+    elif hashingAlgorithm == HashingAlgorithm.ARGON2:
+        hashed_password = hash_argon2(password)
+    elif hashingAlgorithm == HashingAlgorithm.BCRYPT:
+        hashed_password = hash_bcrypt(password)
+    elif hashingAlgorithm == HashingAlgorithm.SCRYPT:
+        hashed_password = hash_scrypt(password)
+
+    return hashed_password            
+
 
 if __name__ == "__main__":
     main()
