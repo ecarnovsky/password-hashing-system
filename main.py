@@ -83,7 +83,7 @@ def main():
                     print("Invalid choice, please try again.")
                     continue
 
-            hashing_algorithm = getAlorithmChoice()
+            hashing_algorithm = getAlgorithmChoice()
 
             hashed_password = getHashedPassword(password, hashing_algorithm)
 
@@ -122,7 +122,7 @@ def main():
             elif next_action == '3':
                 while True:
 
-                    hashing_algorithm = getAlorithmChoice()
+                    hashing_algorithm = getAlgorithmChoice()
 
                     hashed_password = getHashedPassword(password, hashing_algorithm)
 
@@ -138,7 +138,7 @@ def main():
                     break
 
 
-def getAlorithmChoice():
+def getAlgorithmChoice():
     while True:
         # Display a menu for selecting a hashing algorithm
         print("Select a hashing algorithm:")
