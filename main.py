@@ -52,7 +52,7 @@ def main():
             password = input("Enter your password: ")
 
             # Verify the password
-            if stored_password == hash_md5(password) or stored_password == hash_sha512(password) or stored_password == hash_pbkdf2(password):
+            if stored_password == hash_md5(password) or stored_password == hash_sha512(password) or stored_password == hash_pbkdf2(password) or stored_password == hash_argon2(password) or stored_password == hash_bcrypt(password) or stored_password == hash_scrypt(password):
                 print("Login successful.")
             else:
                 print("Incorrect password. Try again.")
