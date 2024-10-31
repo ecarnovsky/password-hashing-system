@@ -16,10 +16,10 @@ class DatabaseConnection:
         con.close()
 
     @staticmethod
-    def find_user(user):
+    def find_user_by_username(username):
         con = sqlite3.connect(DatabaseConnection.DATABASE_NAME)
         cur = con.cursor()
-        res = cur.execute("SELECT * FROM user WHERE username=?", (user.username,))
+        res = cur.execute("SELECT * FROM user WHERE username=?", (username,))
         user_row = res.fetchone()
         con.commit()
         con.close()

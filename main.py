@@ -43,8 +43,7 @@ def main():
         username = input("Enter a username: ")
 
         # Check if the username already exists in the database
-        user = User(username, None, None, None, None)
-        found_user = DatabaseConnection.find_user(user)
+        found_user = DatabaseConnection.find_user_by_username(username)
 
         if found_user:
             # Username exists, prompt for password to log in
