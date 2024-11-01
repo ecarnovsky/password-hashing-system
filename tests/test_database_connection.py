@@ -5,6 +5,8 @@ db_connection = DatabaseConnection()
 
 def test_adding_and_finding_user():
 
+    DatabaseConnection.create_user_table()
+
     user = User('test_user', 'password123', 'argon2', '1111111111111111', '1111')
     DatabaseConnection.add_user(user)
 
