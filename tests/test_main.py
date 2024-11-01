@@ -11,7 +11,6 @@ from hashing_algorithm import HashingAlgorithm
     ("5", HashingAlgorithm.BCRYPT),
     ("6", HashingAlgorithm.SCRYPT)
 ])
-
 def test_get_algorithm_user_choice(monkeypatch, user_input, expected):
 
     monkeypatch.setattr("builtins.input", lambda _: user_input)                 
@@ -19,4 +18,8 @@ def test_get_algorithm_user_choice(monkeypatch, user_input, expected):
     assert result == expected
 
 
-
+@pytest.mark.parametrize("algorithm", list(HashingAlgorithm))
+def test_get_hashed_password(algorithm):
+    result = main.get_hashed_password("password123", algorithm)
+    assert isinstance(result, str)
+    assert len(result) > 10
