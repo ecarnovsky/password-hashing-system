@@ -1,6 +1,6 @@
 import pytest
-import main
-from hashing_algorithm import HashingAlgorithm
+import src.main as main
+from src.hashing_algorithm import HashingAlgorithm
 
 
 @pytest.mark.parametrize("user_input, expected", [

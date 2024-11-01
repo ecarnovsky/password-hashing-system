@@ -2,9 +2,9 @@ import hashlib
 from argon2 import PasswordHasher
 import bcrypt
 import os
-from database_connection import DatabaseConnection
-from user import User
-from hashing_algorithm import HashingAlgorithm
+from .database_connection import DatabaseConnection
+from .user import User
+from .hashing_algorithm import HashingAlgorithm
 
 
 # Define functions
@@ -158,6 +158,9 @@ def get_algorithm_user_choice():
 
 
 def get_hashed_password(password: str, hashingAlgorithm: HashingAlgorithm):
+
+    hashed_password = None
+
     if hashingAlgorithm == HashingAlgorithm.MD5:
         hashed_password = hash_md5(password)
     elif hashingAlgorithm == HashingAlgorithm.SHA512:
@@ -171,7 +174,10 @@ def get_hashed_password(password: str, hashingAlgorithm: HashingAlgorithm):
     elif hashingAlgorithm == HashingAlgorithm.SCRYPT:
         hashed_password = hash_scrypt(password)
 
-    return hashed_password            
+    if hashed_password:
+        return hashed_password  
+    else: 
+         raise Exception("There was an error with hashing the password.")        
 
 
 if __name__ == "__main__":

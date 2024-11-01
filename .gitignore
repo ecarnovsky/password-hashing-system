@@ -1,2 +1,4 @@
 venv
 password-hashing.db
+__pycache__
+.pytest_cache

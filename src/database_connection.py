@@ -1,12 +1,12 @@
 import sqlite3
-from user import User
+from .user import User
 
 class DatabaseConnection:
-    DATABASE_NAME = "password-hashing.db"
+    DATABASE_PATH = r'..\password-hashing.db'
 
     @staticmethod
     def add_user(user):
-        con = sqlite3.connect(DatabaseConnection.DATABASE_NAME)
+        con = sqlite3.connect(DatabaseConnection.DATABASE_PATH)
         cur = con.cursor()
         cur.execute(
             "INSERT INTO user (username, hashing_algorithm, hashed_password, salt) VALUES (?, ?, ?, ?)",
@@ -17,7 +17,7 @@ class DatabaseConnection:
 
     @staticmethod
     def find_user_by_username(username):
-        con = sqlite3.connect(DatabaseConnection.DATABASE_NAME)
+        con = sqlite3.connect(DatabaseConnection.DATABASE_PATH)
         cur = con.cursor()
         res = cur.execute("SELECT * FROM user WHERE username=?", (username,))
         user_row = res.fetchone()
@@ -30,7 +30,7 @@ class DatabaseConnection:
 # had to update this so IF NOT EXISTS works
     @staticmethod
     def create_user_table():
-        con = sqlite3.connect(DatabaseConnection.DATABASE_NAME)
+        con = sqlite3.connect(DatabaseConnection.DATABASE_PATH)
         cur = con.cursor()
         cur.execute("""
             CREATE TABLE IF NOT EXISTS user (

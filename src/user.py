@@ -1,4 +1,4 @@
-from hashing_algorithm import HashingAlgorithm
+from .hashing_algorithm import HashingAlgorithm
 class User:
     def __init__(self, username: str, plain_text_password: str, hashing_algorithm: HashingAlgorithm, hashed_password: str, salt: str):
         self.username = username
