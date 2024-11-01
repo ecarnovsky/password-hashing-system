@@ -1,5 +1,3 @@
-import pytest
-from src.hashing_algorithm import HashingAlgorithm
 from src.database_connection import DatabaseConnection
 from src.user import User
 
