@@ -42,13 +42,3 @@ class DatabaseConnection:
         """)
         con.commit()
         con.close()
-
-def tests():
-    print("Test starting...")
-    test_user = User('Cool$$32', 'password123', 'argon2', 'jhgftr5678uijhvcxdser56', 'jhgfd8')
-    DatabaseConnection.add_user(test_user)
-    # print(DatabaseConnection.find_user(test_user))
-    print("Test done.")
-
-if __name__ == "__main__":
-    tests()
