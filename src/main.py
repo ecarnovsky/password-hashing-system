@@ -1,38 +1,7 @@
-import hashlib
-from argon2 import PasswordHasher
-import bcrypt
-import os
 from .database_connection import DatabaseConnection
 from .user import User
 from .hashing_algorithm import HashingAlgorithm
-
-
-# Define functions
-def hash_md5(password):
-    return hashlib.md5(password.encode()).hexdigest()
-
-def hash_sha512(password):
-    return hashlib.sha512(password.encode()).hexdigest()
-
-def hash_pbkdf2(password):
-    salt = getSalt()
-    hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 100000)
-    return salt.hex() + hashed_password.hex()
-
-def hash_argon2(password):
-    argon2_hasher = PasswordHasher()
-    hash_and_metadata =  argon2_hasher.hash(password)
-    hashed_password = hash_and_metadata.split('$')[-1]
-    return hashed_password
-
-def hash_bcrypt(password):
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).hex()
-
-def hash_scrypt(password):
-    return hashlib.scrypt(password.encode(), salt=getSalt(), n=16384, r=8, p=1).hex()
-
-def getSalt():
-    return os.urandom(16)
+from .auth import Auth
 
 # Main function
 def main():
@@ -53,7 +22,7 @@ def main():
             password = input("Enter your password: ")
 
             # Verify the password
-            if stored_password == hash_md5(password) or stored_password == hash_sha512(password) or stored_password == hash_pbkdf2(password) or stored_password == hash_argon2(password) or stored_password == hash_bcrypt(password) or stored_password == hash_scrypt(password):
+            if stored_password == Auth.hash_md5(password) or stored_password == Auth.hash_sha512(password) or stored_password == Auth.hash_pbkdf2(password) or stored_password == Auth.hash_argon2(password) or stored_password == Auth.hash_bcrypt(password) or stored_password == Auth.hash_scrypt(password):
                 print("Login successful.")
             else:
                 print("Incorrect password. Try again.")
@@ -162,17 +131,17 @@ def get_hashed_password(password: str, hashingAlgorithm: HashingAlgorithm):
     hashed_password = None
 
     if hashingAlgorithm == HashingAlgorithm.MD5:
-        hashed_password = hash_md5(password)
+        hashed_password = Auth.hash_md5(password)
     elif hashingAlgorithm == HashingAlgorithm.SHA512:
-        hashed_password = hash_sha512(password)
+        hashed_password = Auth.hash_sha512(password)
     elif hashingAlgorithm == HashingAlgorithm.PBKDF2:
-        hashed_password = hash_pbkdf2(password)
+        hashed_password = Auth.hash_pbkdf2(password)
     elif hashingAlgorithm == HashingAlgorithm.ARGON2:
-        hashed_password = hash_argon2(password)
+        hashed_password = Auth.hash_argon2(password)
     elif hashingAlgorithm == HashingAlgorithm.BCRYPT:
-        hashed_password = hash_bcrypt(password)
+        hashed_password = Auth.hash_bcrypt(password)
     elif hashingAlgorithm == HashingAlgorithm.SCRYPT:
-        hashed_password = hash_scrypt(password)
+        hashed_password = Auth.hash_scrypt(password)
 
     if hashed_password:
         return hashed_password  

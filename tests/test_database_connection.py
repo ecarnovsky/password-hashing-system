@@ -1,8 +1,6 @@
 from src.database_connection import DatabaseConnection
 from src.user import User
 
-db_connection = DatabaseConnection()
-
 def test_adding_and_finding_user():
 
     DatabaseConnection.create_user_table()
