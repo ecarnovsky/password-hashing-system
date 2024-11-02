@@ -6,24 +6,33 @@ import os
 class Auth:
     """
     Handles things related to authenticating the user, such as hashing.
-
     """
 
+    @staticmethod
+    def __getSalt():
+        return os.urandom(16)
 
     """ MD5 """
     @staticmethod
-    def hash_md5(password: str):
-        return hashlib.md5(password.encode()).hexdigest()
+    def hash_md5(password: str, salt: bytes = None):
+        if salt is None:
+            salt = Auth.__getSalt()
+        hashed_password = hashlib.md5(salt + password.encode()).hexdigest()
+        return salt.hex() + hashed_password
 
     """ SHA-512 """
     @staticmethod
-    def hash_sha512(password: str):
-        return hashlib.sha512(password.encode()).hexdigest()
-    
+    def hash_sha512(password: str, salt: bytes = None):
+        if salt is None:
+            salt = Auth.__getSalt()
+        hashed_password = hashlib.sha512(salt + password.encode()).hexdigest()
+        return salt.hex() + hashed_password
+
     """ PBKDF2 """
     @staticmethod
-    def hash_pbkdf2(password: str):
-        salt = Auth.__getSalt()
+    def hash_pbkdf2(password: str, salt: bytes = None):
+        if salt is None:
+            salt = Auth.__getSalt()
         hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 100000)
         return salt.hex() + hashed_password.hex()
 
@@ -31,21 +40,19 @@ class Auth:
     @staticmethod
     def hash_argon2(password: str):
         argon2_hasher = PasswordHasher()
-        hash_and_metadata =  argon2_hasher.hash(password)
-        hashed_password = hash_and_metadata.split('$')[-1]
-        return hashed_password
- 
+        return argon2_hasher.hash(password)
+
     """ bcrypt """
-    # bcrypt's salting library is used here instead of our function
     @staticmethod
     def hash_bcrypt(password: str):
-        return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).hex()
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(password.encode(), salt)
+        return salt.hex() + hashed_password.decode()
 
     """ scrypt """
     @staticmethod
-    def hash_scrypt(password: str):
-        return hashlib.scrypt(password.encode(), salt=Auth.__getSalt(), n=16384, r=8, p=1).hex()
-
-    @staticmethod
-    def __getSalt():
-        return os.urandom(16)
+    def hash_scrypt(password: str, salt: bytes = None):
+        if salt is None:
+            salt = Auth.__getSalt()
+        hashed_password = hashlib.scrypt(password.encode(), salt=salt, n=16384, r=8, p=1).hex()
+        return salt.hex() + hashed_password
