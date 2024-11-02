@@ -5,10 +5,21 @@ from .auth import Auth
 
 # Main function
 def main():
+    """
+    Contains two main loops. The outer loop runs when the user is not 
+    logged in, and handles getting their username and password.
+    The inner loop runs after the user is logged in. Its asks 
+    them what their next action will be, such as logging out or 
+    changing their password.
+
+    """
+
+
     # Ensure the user table exists
     DatabaseConnection.create_user_table_if_not_exist()
 
     while True:
+        """ Outer Loop """
 
         # Prompt the user for a username
         username = input("Enter a username: ")
@@ -29,7 +40,8 @@ def main():
             else:
                 print("Incorrect password. Try again.")
                 continue
-        else:
+
+        elif not found_user:
             # Username is new, prompt to create a password
             print("Username created.")
             password = input("Enter a password: ")
@@ -46,8 +58,9 @@ def main():
 
 
 
-
         while True:
+            """ Inner Loop """
+
             # If the user successfully logs in or creates an account, present the options
             print("Do you want to:")
             print("1. Log out")
@@ -57,6 +70,7 @@ def main():
 
             if next_action == '1':
                 print("You are now logged out.")
+
                 break
             elif next_action == '2':
                 hashing_algorithm = get_algorithm_user_choice()
@@ -90,6 +104,11 @@ def main():
 
 
 def get_algorithm_user_choice():
+    """ 
+    Allows the user to input a number to choose what hashing 
+    algorithm to use on their password.
+    
+    """
 
     while True:
         # Display a menu for selecting a hashing algorithm
@@ -109,6 +128,10 @@ def get_algorithm_user_choice():
 
 
 def get_hashed_password(password: str, hashingAlgorithm: HashingAlgorithm):
+    """
+    Returns a hashed password using whatever hashing algorithm is specified.
+    
+    """
 
     hashed_password = None
 
