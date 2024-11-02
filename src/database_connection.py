@@ -2,16 +2,11 @@ import sqlite3
 from .user import User
 
 class DatabaseConnection:
-    """
-    Allows for a connection to a SQLite database. 
-    
-    """
-
     _DATABASE_NAME = "password-hashing.db"
 
     @staticmethod
     def add_user(user: User):
-        con = sqlite3.connect(DatabaseConnection. _DATABASE_NAME)
+        con = sqlite3.connect(DatabaseConnection._DATABASE_NAME)
         cur = con.cursor()
         cur.execute(
             "INSERT INTO user (username, hashing_algorithm, hashed_password, salt) VALUES (?, ?, ?, ?)",
@@ -21,8 +16,19 @@ class DatabaseConnection:
         con.close()
 
     @staticmethod
+    def update_user(user: User):
+        con = sqlite3.connect(DatabaseConnection._DATABASE_NAME)
+        cur = con.cursor()
+        cur.execute(
+            "UPDATE user SET hashing_algorithm = ?, hashed_password = ?, salt = ? WHERE username = ?",
+            (user.hashing_algorithm, user.hashed_password, user.salt, user.username)
+        )
+        con.commit()
+        con.close()
+
+    @staticmethod
     def find_user_by_username(username: str):
-        con = sqlite3.connect(DatabaseConnection. _DATABASE_NAME)
+        con = sqlite3.connect(DatabaseConnection._DATABASE_NAME)
         cur = con.cursor()
         res = cur.execute("SELECT * FROM user WHERE username=?", (username,))
         user_row = res.fetchone()
@@ -35,7 +41,7 @@ class DatabaseConnection:
 
     @staticmethod
     def create_user_table_if_not_exist():
-        con = sqlite3.connect(DatabaseConnection. _DATABASE_NAME)
+        con = sqlite3.connect(DatabaseConnection._DATABASE_NAME)
         cur = con.cursor()
         cur.execute("""
             CREATE TABLE IF NOT EXISTS user (
