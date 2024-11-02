@@ -5,19 +5,67 @@ from .auth import Auth
 
 # Main function
 def main():
-    """
-    Contains two main loops. The outer loop runs when the user is not 
-    logged in, and handles getting their username and password.
-    The inner loop runs after the user is logged in. Its asks 
-    them what their next action will be, such as logging out or 
-    changing their password.
-    """
 
     # Ensure the user table exists
     DatabaseConnection.create_user_table_if_not_exist()
 
     while True:
-        """ Outer Loop """
+
+        user = get_user()
+        logged_in_action_loop(user)
+
+
+
+
+
+def logged_in_action_loop(user: User):
+
+    while True:
+
+        # If the user successfully logs in or creates an account, present the options
+        print("Do you want to:")
+        print("1. Log out")
+        print("2. Hash the password with a different algorithm")
+        print("3. Change the password")
+        next_action = input("Enter the number of your choice: ")
+
+        if next_action == '1':
+            print("You are now logged out.")
+            break
+        elif next_action == '2':
+            hashing_algorithm = get_algorithm_user_choice()
+            hashed_password, salt = get_hashed_password(user.plain_text_password, hashing_algorithm)
+
+            # Update the username and hashed password in the database
+            updated_user = User(user.username, user.plain_text_password, hashing_algorithm.name, hashed_password, salt)
+            DatabaseConnection.update_user(updated_user)
+
+            # Output the hashed password
+            print("Password updated in the database successfully.")
+            print(f"Hashed password: {hashed_password}")
+        elif next_action == '3':
+            # Prompt the user for a new password
+            password = input("Enter a new password: ")
+            hashing_algorithm = get_algorithm_user_choice()
+            hashed_password, salt = get_hashed_password(user.plain_text_password, hashing_algorithm)
+
+            # Update the username and hashed password in the database
+            updated_user = User(user.username, user.plain_text_password, hashing_algorithm.name, hashed_password, salt)
+            DatabaseConnection.update_user(updated_user)
+
+            # Output the hashed password
+            print("Password updated in the database successfully.")
+            print(f"Hashed password: {hashed_password}")
+        else:
+            print("Invalid choice, please try again.")
+            continue
+
+
+
+
+def get_user():
+    
+    while True:
 
         # Prompt the user for a username
         username = input("Enter a username: ")
@@ -39,6 +87,7 @@ def main():
                 stored_password == Auth.hash_sha512(password, stored_salt) or
                 stored_password == Auth.hash_pbkdf2(password, stored_salt)):
                 print("Login successful.")
+                return found_user
             else:
                 print("Incorrect password. Try again.")
                 continue
@@ -57,46 +106,9 @@ def main():
             print("Username and hashed password stored in the database successfully.")
             print(f"Hashed password: {hashed_password}")
 
-        while True:
-            """ Inner Loop """
+            return new_user
 
-            # If the user successfully logs in or creates an account, present the options
-            print("Do you want to:")
-            print("1. Log out")
-            print("2. Hash the password with a different algorithm")
-            print("3. Change the password")
-            next_action = input("Enter the number of your choice: ")
 
-            if next_action == '1':
-                print("You are now logged out.")
-                break
-            elif next_action == '2':
-                hashing_algorithm = get_algorithm_user_choice()
-                hashed_password, salt = get_hashed_password(password, hashing_algorithm)
-
-                # Update the username and hashed password in the database
-                updated_user = User(username, password, hashing_algorithm.name, hashed_password, salt)
-                DatabaseConnection.update_user(updated_user)
-
-                # Output the hashed password
-                print("Password updated in the database successfully.")
-                print(f"Hashed password: {hashed_password}")
-            elif next_action == '3':
-                # Prompt the user for a new password
-                password = input("Enter a new password: ")
-                hashing_algorithm = get_algorithm_user_choice()
-                hashed_password, salt = get_hashed_password(password, hashing_algorithm)
-
-                # Update the username and hashed password in the database
-                updated_user = User(username, password, hashing_algorithm.name, hashed_password, salt)
-                DatabaseConnection.update_user(updated_user)
-
-                # Output the hashed password
-                print("Password updated in the database successfully.")
-                print(f"Hashed password: {hashed_password}")
-            else:
-                print("Invalid choice, please try again.")
-                continue
 
 def get_algorithm_user_choice():
     """ 
