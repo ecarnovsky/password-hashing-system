@@ -29,7 +29,9 @@ def main():
             # Username exists, prompt for password to log in
             print("Username exists. Please log in.")
             stored_password = found_user.hashed_password
-            stored_salt = bytes.fromhex(found_user.salt)
+            stored_salt= found_user.salt
+            if stored_salt is not None:
+                stored_salt = bytes.fromhex(found_user.salt)
             password = input("Enter your password: ")
 
             # Verify the password
@@ -140,6 +142,8 @@ def get_hashed_password(password: str, hashingAlgorithm: HashingAlgorithm):
         hashed_password = hashed_password[32:]
     elif hashingAlgorithm == HashingAlgorithm.ARGON2:
         hashed_password = Auth.hash_argon2(password)
+        #Argon2 includes salt in hash, no need to extract it
+        salt=None
     elif hashingAlgorithm == HashingAlgorithm.BCRYPT:
         hashed_password = Auth.hash_bcrypt(password)
         salt = hashed_password[:32]
