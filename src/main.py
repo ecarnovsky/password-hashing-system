@@ -47,7 +47,7 @@ def logged_in_action_loop(user: User):
             # Prompt the user for a new password
             password = input("Enter a new password: ")
             hashing_algorithm = get_algorithm_user_choice()
-            hashed_password, salt = get_hashed_password(user.plain_text_password, hashing_algorithm)
+            hashed_password, salt = get_hashed_password(password, hashing_algorithm)
 
             # Update the username and hashed password in the database
             updated_user = User(user.username, user.plain_text_password, hashing_algorithm.name, hashed_password, salt)
@@ -83,9 +83,9 @@ def get_user():
             password = input("Enter your password: ")
 
             # Verify the password
-            if (stored_password == Auth.hash_md5(password, stored_salt) or
-                stored_password == Auth.hash_sha512(password, stored_salt) or
-                stored_password == Auth.hash_pbkdf2(password, stored_salt)):
+            if (stored_password == Auth.hash_md5(password, stored_salt)[32:] or
+                stored_password == Auth.hash_sha512(password, stored_salt)[32:] or
+                stored_password == Auth.hash_pbkdf2(password, stored_salt)[32:]):
                 print("Login successful.")
                 return found_user
             else:

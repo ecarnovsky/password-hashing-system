@@ -17,6 +17,7 @@ class Auth:
     def hash_md5(password: str, salt: bytes = None):
         if salt is None:
             salt = Auth.__getSalt()
+
         hashed_password = hashlib.md5(salt + password.encode()).hexdigest()
         return salt.hex() + hashed_password
 
