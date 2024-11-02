@@ -9,8 +9,10 @@ def main():
     DatabaseConnection.create_user_table_if_not_exist()
 
     while True:
+
         # Prompt the user for a username
         username = input("Enter a username: ")
+
 
         # Check if the username already exists in the database
         found_user = DatabaseConnection.find_user_by_username(username)
@@ -32,79 +34,59 @@ def main():
             print("Username created.")
             password = input("Enter a password: ")
 
-        while True:
-            # If the user successfully logs in, present the options
-            if found_user:
-                print("Do you want to:")
-                print("1. Log out")
-                print("2. Hash the password with a different algorithm")
-                print("3. Change the password")
-                next_action = input("Enter the number of your choice: ")
-
-                if next_action == '1':
-                    return
-                elif next_action == '2':
-                    pass  # Continue to the hashing algorithm selection
-                elif next_action == '3':
-                    # Prompt the user for a new password
-                    password = input("Enter a new password: ")
-                else:
-                    print("Invalid choice, please try again.")
-                    continue
-
             hashing_algorithm = get_algorithm_user_choice()
-
             hashed_password = get_hashed_password(password, hashing_algorithm)
 
-            # Insert or update the username and hashed password in the database
             new_user = User(username, password, hashing_algorithm.name, hashed_password, None)
-            if found_user:
-                DatabaseConnection.add_user(new_user)
-            else:
-                DatabaseConnection.add_user(new_user)
+            DatabaseConnection.add_user(new_user)
 
-            # Output the hashed password
             print("Username and hashed password stored in the database successfully.")
             print(f"Hashed password: {hashed_password}")
 
-            # Ask the user if they want to log out, hash the password with a different algorithm, or change the password
-            while True:
-                print("Do you want to:")
-                print("1. Log out")
-                print("2. Hash the password with a different algorithm")
-                print("3. Change the password")
-                next_action = input("Enter the number of your choice: ")
 
-                if next_action == '1':
-                    return
-                elif next_action == '2':
-                    break
-                elif next_action == '3':
-                    # Prompt the user for a new password
-                    password = input("Enter a new password: ")
-                    break
-                else:
-                    print("Invalid choice, please try again.")
 
-            if next_action == '2':
-                continue
+
+
+        while True:
+            # If the user successfully logs in or creates an account, present the options
+            print("Do you want to:")
+            print("1. Log out")
+            print("2. Hash the password with a different algorithm")
+            print("3. Change the password")
+            next_action = input("Enter the number of your choice: ")
+
+            if next_action == '1':
+                print("You are now logged out.")
+                break
+            elif next_action == '2':
+                hashing_algorithm = get_algorithm_user_choice()
+                hashed_password = get_hashed_password(password, hashing_algorithm)
+
+                # Insert or update the username and hashed password in the database
+                # The below code is currently wrong. We need to get it to update the row, not add a new one.
+                updated_user = User(username, password, hashing_algorithm.name, hashed_password, None)
+                DatabaseConnection.add_user(updated_user)
+
+                # Output the hashed password
+                print("Password updated in the database successfully.")
+                print(f"Hashed password: {hashed_password}")
             elif next_action == '3':
-                while True:
+                # Prompt the user for a new password
+                password = input("Enter a new password: ")
+                hashing_algorithm = get_algorithm_user_choice()
+                hashed_password = get_hashed_password(password, hashing_algorithm)
 
-                    hashing_algorithm = get_algorithm_user_choice()
+                # Insert or update the username and hashed password in the database
+                # The below code is currently wrong. We need to get it to update the row, not add a new one.
+                updated_user = User(username, password, hashing_algorithm.name, hashed_password, None)
+                DatabaseConnection.add_user(updated_user)
 
-                    hashed_password = get_hashed_password(password, hashing_algorithm)
-
-                    # Update the password for the existing username in the database
-                    new_user = User(username, password, hashing_algorithm.name, hashed_password, None)
-                    DatabaseConnection.add_user(new_user)
-
-                    # Output the hashed password
-                    print("Password updated successfully.")
-                    print(f"New hashed password: {hashed_password}")
-
-                    # Ask the user if they want to log out, hash the password with a different algorithm, or change the password
-                    break
+                # Output the hashed password
+                print("Password updated in the database successfully.")
+                print(f"Hashed password: {hashed_password}")
+            else:
+                print("Invalid choice, please try again.")
+                continue
 
 
 def get_algorithm_user_choice():
