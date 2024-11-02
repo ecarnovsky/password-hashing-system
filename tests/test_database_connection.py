@@ -3,7 +3,7 @@ from src.user import User
 
 def test_adding_and_finding_user():
 
-    DatabaseConnection.create_user_table()
+    DatabaseConnection.create_user_table_if_not_exist()
 
     user = User('test_user', 'password123', 'argon2', '1111111111111111', '1111')
     DatabaseConnection.add_user(user)

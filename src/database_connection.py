@@ -2,11 +2,16 @@ import sqlite3
 from .user import User
 
 class DatabaseConnection:
-    DATABASE_PATH = r'..\password-hashing.db'
+    """
+    Allows for a connection to a SQLite database. 
+    
+    """
+
+    _DATABASE_NAME = "password-hashing.db"
 
     @staticmethod
-    def add_user(user):
-        con = sqlite3.connect(DatabaseConnection.DATABASE_PATH)
+    def add_user(user: User):
+        con = sqlite3.connect(DatabaseConnection. _DATABASE_NAME)
         cur = con.cursor()
         cur.execute(
             "INSERT INTO user (username, hashing_algorithm, hashed_password, salt) VALUES (?, ?, ?, ?)",
@@ -16,8 +21,8 @@ class DatabaseConnection:
         con.close()
 
     @staticmethod
-    def find_user_by_username(username):
-        con = sqlite3.connect(DatabaseConnection.DATABASE_PATH)
+    def find_user_by_username(username: str):
+        con = sqlite3.connect(DatabaseConnection. _DATABASE_NAME)
         cur = con.cursor()
         res = cur.execute("SELECT * FROM user WHERE username=?", (username,))
         user_row = res.fetchone()
@@ -27,10 +32,10 @@ class DatabaseConnection:
             return None
         else:
             return User(user_row[0], None, user_row[1], user_row[2], user_row[3])
-# had to update this so IF NOT EXISTS works
+
     @staticmethod
-    def create_user_table():
-        con = sqlite3.connect(DatabaseConnection.DATABASE_PATH)
+    def create_user_table_if_not_exist():
+        con = sqlite3.connect(DatabaseConnection. _DATABASE_NAME)
         cur = con.cursor()
         cur.execute("""
             CREATE TABLE IF NOT EXISTS user (

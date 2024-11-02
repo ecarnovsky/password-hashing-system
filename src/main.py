@@ -6,7 +6,7 @@ from .auth import Auth
 # Main function
 def main():
     # Ensure the user table exists
-    DatabaseConnection.create_user_table()
+    DatabaseConnection.create_user_table_if_not_exist()
 
     while True:
         # Prompt the user for a username
