@@ -87,7 +87,7 @@ def get_user():
                 stored_password == Auth.hash_sha512(password, stored_salt)[32:] or
                 stored_password == Auth.hash_pbkdf2(password, stored_salt)[32:] or
                 stored_password == Auth.hash_argon2(password, stored_salt)[32:] or
-                stored_password == Auth.hash_bcrypt(password, stored_salt)[32:] or
+                stored_password == Auth.hash_bcrypt(password)[32:] or
                 stored_password== Auth.hash_scrypt(password, stored_salt)[32:]
                 ):
                 print("Login successful.")
