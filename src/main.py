@@ -2,7 +2,6 @@ from .database_connection import DatabaseConnection
 from .user import User
 from .hashing_algorithm import HashingAlgorithm
 from .auth import Auth
-from .main import get_hashed_password
 
 # Main function
 def main():
