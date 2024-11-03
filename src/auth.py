@@ -1,5 +1,6 @@
 import hashlib
 from argon2 import PasswordHasher
+from argon2.low_level import hash_secret, Type
 import bcrypt
 import os
 
@@ -39,13 +40,25 @@ class Auth:
 
     """ argon2 """
     @staticmethod
-    def hash_argon2(password: str):
-        argon2_hasher = PasswordHasher()
-        return argon2_hasher.hash(password)
+    def hash_argon2(password: str, salt: bytes = None):
+        if salt is None:
+            salt = Auth.__getSalt()
+        # Use Argon2 low-level API to specify a custom salt
+        hashed_password = hash_secret(
+            password.encode(),
+            salt,
+            time_cost=2,
+            memory_cost=102400,
+            parallelism=8,
+            hash_len=32,
+            type=Type.I
+        ).hex()
+        # Store salt with hash for retrieval
+        return salt.hex() + hashed_password
 
     """ bcrypt """
     @staticmethod
-    def hash_bcrypt(password: str):
+    def hash_bcrypt(password: str, salt: bytes = None):
         salt = bcrypt.gensalt()
         hashed_password = bcrypt.hashpw(password.encode(), salt)
         return salt.hex() + hashed_password.decode()

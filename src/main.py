@@ -2,6 +2,7 @@ from .database_connection import DatabaseConnection
 from .user import User
 from .hashing_algorithm import HashingAlgorithm
 from .auth import Auth
+from .main import get_hashed_password
 
 # Main function
 def main():
@@ -85,7 +86,10 @@ def get_user():
             # Verify the password
             if (stored_password == Auth.hash_md5(password, stored_salt)[32:] or
                 stored_password == Auth.hash_sha512(password, stored_salt)[32:] or
-                stored_password == Auth.hash_pbkdf2(password, stored_salt)[32:] 
+                stored_password == Auth.hash_pbkdf2(password, stored_salt)[32:] or
+                stored_password == Auth.hash_argon2(password, stored_salt)[32:] or
+                stored_password == Auth.hash_bcrypt(password, stored_salt)[32:] or
+                stored_password== Auth.hash_scrypt(password, stored_salt)[32:]
                 ):
                 print("Login successful.")
                 return found_user
@@ -155,8 +159,11 @@ def get_hashed_password(password: str, hashingAlgorithm: HashingAlgorithm):
         hashed_password = hashed_password[32:]
     elif hashingAlgorithm == HashingAlgorithm.ARGON2:
         hashed_password = Auth.hash_argon2(password)
-        #Argon2 includes salt in hash, no need to extract it
-        salt=None
+        salt = hashed_password[:32]
+        hashed_password = hashed_password[32:]
+        # salt=None
+
+
     elif hashingAlgorithm == HashingAlgorithm.BCRYPT:
         hashed_password = Auth.hash_bcrypt(password)
         salt = hashed_password[:32]
