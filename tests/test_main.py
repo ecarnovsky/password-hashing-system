@@ -34,8 +34,6 @@ def test_get_hashed_password(algorithm):
 """
 Tests if a user can create an account and then login afterwords
 using every hashing algorithm.
-Due to test users not being deleted afterwords, please
-delete your database file before running this test.
 
 """
 # @pytest.mark.parametrize("algorithm_number_choice", ["1","2","3","4","5","6"])
