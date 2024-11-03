@@ -36,25 +36,28 @@ Tests if a user can create an account and then login afterwords
 using every hashing algorithm.
 
 """
-# @pytest.mark.parametrize("algorithm_number_choice", ["1","2","3","4","5","6"])
-# def test_get_user(monkeypatch, algorithm_number_choice):
+@pytest.mark.parametrize("algorithm_number_choice", ["1","2","3","4","5","6"])
+def test_get_user(monkeypatch, algorithm_number_choice):
+    
 
-#     TEST_USERNAME = "test_user"
-#     TEST_PASSWORD = "password123"
+    TEST_USERNAME = "test_user"
+    TEST_PASSWORD = "password123"
 
-#     inputs = iter([
-#             TEST_USERNAME,     
-#             TEST_PASSWORD,
-#             algorithm_number_choice,
-#             TEST_USERNAME,     
-#             TEST_PASSWORD     
-#         ])
-#     with patch("builtins.print") as mock_print:  
-#         monkeypatch.setattr("builtins.input", lambda _: next(inputs))
-#         main.get_user()
-#         main.get_user()
+    DatabaseConnection.delete_user_by_username(TEST_USERNAME)
 
-#         mock_print.assert_any_call("Username created.")
-#         mock_print.assert_any_call("Login successful.")
+    inputs = iter([
+            TEST_USERNAME,     
+            TEST_PASSWORD,
+            algorithm_number_choice,
+            TEST_USERNAME,     
+            TEST_PASSWORD     
+        ])
+    with patch("builtins.print") as mock_print:  
+        monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+        main.get_user()
+        main.get_user()
 
-#         DatabaseConnection.delete_user_by_username(TEST_USERNAME)
+        mock_print.assert_any_call("Username created.")
+        mock_print.assert_any_call("Login successful.")
+
+        DatabaseConnection.delete_user_by_username(TEST_USERNAME)
