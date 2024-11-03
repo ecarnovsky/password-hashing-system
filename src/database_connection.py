@@ -38,6 +38,20 @@ class DatabaseConnection:
             return None
         else:
             return User(user_row[0], None, user_row[1], user_row[2], user_row[3])
+        
+    @staticmethod
+    def delete_user_by_username(username: str):
+        """ Returns true if successful """
+
+        con = sqlite3.connect(DatabaseConnection._DATABASE_NAME)
+        cur = con.cursor()
+        cur.execute("DELETE FROM user WHERE username=?", (username,))
+        num_of_deleted_rows = cur.rowcount
+        con.commit()
+        con.close()
+        return (num_of_deleted_rows > 0)
+    
+
 
     @staticmethod
     def create_user_table_if_not_exist():

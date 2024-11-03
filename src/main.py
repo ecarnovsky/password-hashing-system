@@ -85,7 +85,8 @@ def get_user():
             # Verify the password
             if (stored_password == Auth.hash_md5(password, stored_salt)[32:] or
                 stored_password == Auth.hash_sha512(password, stored_salt)[32:] or
-                stored_password == Auth.hash_pbkdf2(password, stored_salt)[32:]):
+                stored_password == Auth.hash_pbkdf2(password, stored_salt)[32:] 
+                ):
                 print("Login successful.")
                 return found_user
             else:
