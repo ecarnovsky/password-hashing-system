@@ -160,13 +160,10 @@ def get_hashed_password(password: str, hashingAlgorithm: HashingAlgorithm):
         hashed_password = Auth.hash_argon2(password)
         salt = hashed_password[:32]
         hashed_password = hashed_password[32:]
-        # salt=None
-
-
     elif hashingAlgorithm == HashingAlgorithm.BCRYPT:
-        hashed_password = Auth.hash_bcrypt(password)
-        salt = hashed_password[:32]
-        hashed_password = hashed_password[32:]
+        salt,hashed_password = Auth.hash_bcrypt(password)
+        salt = salt.hex()
+        hashed_password = hashed_password.hex()
     elif hashingAlgorithm == HashingAlgorithm.SCRYPT:
         hashed_password = Auth.hash_scrypt(password)
         salt = hashed_password[:32]
