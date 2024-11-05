@@ -87,11 +87,16 @@ def get_user():
                 stored_password == Auth.hash_sha512(password, stored_salt)[32:] or
                 stored_password == Auth.hash_pbkdf2(password, stored_salt)[32:] or
                 stored_password == Auth.hash_argon2(password, stored_salt)[32:] or
-                stored_password == Auth.hash_bcrypt(password)[32:] or
                 stored_password== Auth.hash_scrypt(password, stored_salt)[32:]
                 ):
                 print("Login successful.")
                 return found_user
+            elif found_user.hashing_algorithm == HashingAlgorithm.BCRYPT.name:
+                new_password, _ = Auth.hash_bcrypt(password, stored_salt)
+                new_password = new_password[-31:].hex()
+                if stored_password == new_password:
+                    print("Login successful.")
+                    return found_user
             else:
                 print("Incorrect password. Try again.")
                 continue
@@ -161,7 +166,8 @@ def get_hashed_password(password: str, hashingAlgorithm: HashingAlgorithm):
         salt = hashed_password[:32]
         hashed_password = hashed_password[32:]
     elif hashingAlgorithm == HashingAlgorithm.BCRYPT:
-        salt,hashed_password = Auth.hash_bcrypt(password)
+        hashed_password, salt = Auth.hash_bcrypt(password)
+        hashed_password = hashed_password[-31:]
         salt = salt.hex()
         hashed_password = hashed_password.hex()
     elif hashingAlgorithm == HashingAlgorithm.SCRYPT:

@@ -58,18 +58,19 @@ class Auth:
 
     """ bcrypt """
     @staticmethod
-    def hash_bcrypt(password: str) -> tuple[bytes, bytes]:
+    def hash_bcrypt(password: str, salt: bytes = None):
+
+        # Generate a salt value
+        if salt is None:
+            salt = bcrypt.gensalt()
 
         # Convert the password to bytes (bcrypt requires byte input)
         password_bytes = password.encode('utf-8')
 
-        # Generate a salt value
-        salt = bcrypt.gensalt()
-
         # Hash the password with the generated salt
         hashed_password = bcrypt.hashpw(password_bytes, salt)
 
-        return salt, hashed_password
+        return  hashed_password, salt
 
     """ scrypt """
     @staticmethod
