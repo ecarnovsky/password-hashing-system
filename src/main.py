@@ -18,6 +18,54 @@ def main():
 
 
 
+
+def get_user():
+    
+    while True:
+
+        # Prompt the user for a username
+        username = input("Enter a username: ")
+
+        # Check if the username already exists in the database
+        found_user = DatabaseConnection.find_user_by_username(username)
+
+        if found_user:
+            # Username exists, prompt for password to log in
+            print("Username exists. Please log in.")
+            stored_password = found_user.hashed_password
+            stored_salt= found_user.salt
+            password = input("Enter your password: ")
+
+            hashed_inputed_password, _ = Auth.get_hashed_password(password, stored_salt, HashingAlgorithm[found_user.hashing_algorithm] )
+           
+            # Verify the password
+            if (hashed_inputed_password == stored_password):
+                print("Login successful.")
+                return found_user
+            else:
+                print("Incorrect password. Try again.")
+                continue
+
+        elif not found_user:
+            # Username is new, prompt to create a password
+            print("Username created.")
+            password = input("Enter a password: ")
+
+            hashing_algorithm = get_algorithm_user_choice()
+            hashed_password, salt = Auth.get_hashed_password(password, None, hashing_algorithm)
+
+            new_user = User(username, password, hashing_algorithm.name, hashed_password, salt)
+            DatabaseConnection.add_user(new_user)
+
+            print("Username and hashed password stored in the database successfully.")
+            print(f"Hashed password: {hashed_password}")
+
+            return new_user
+
+
+
+
+
 def logged_in_action_loop(user: User):
 
     while True:
@@ -61,50 +109,6 @@ def logged_in_action_loop(user: User):
             continue
 
 
-
-
-def get_user():
-    
-    while True:
-
-        # Prompt the user for a username
-        username = input("Enter a username: ")
-
-        # Check if the username already exists in the database
-        found_user = DatabaseConnection.find_user_by_username(username)
-
-        if found_user:
-            # Username exists, prompt for password to log in
-            print("Username exists. Please log in.")
-            stored_password = found_user.hashed_password
-            stored_salt= found_user.salt
-            password = input("Enter your password: ")
-
-            hashed_inputed_password, _ = Auth.get_hashed_password(password, stored_salt, HashingAlgorithm[found_user.hashing_algorithm] )
-           
-            # Verify the password
-            if (hashed_inputed_password == stored_password):
-                    print("Login successful.")
-                    return found_user
-            else:
-                print("Incorrect password. Try again.")
-                continue
-
-        elif not found_user:
-            # Username is new, prompt to create a password
-            print("Username created.")
-            password = input("Enter a password: ")
-
-            hashing_algorithm = get_algorithm_user_choice()
-            hashed_password, salt = Auth.get_hashed_password(password, None, hashing_algorithm)
-
-            new_user = User(username, password, hashing_algorithm.name, hashed_password, salt)
-            DatabaseConnection.add_user(new_user)
-
-            print("Username and hashed password stored in the database successfully.")
-            print(f"Hashed password: {hashed_password}")
-
-            return new_user
 
 
 
