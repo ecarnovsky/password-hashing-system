@@ -9,73 +9,90 @@ class Auth:
     Handles things related to authenticating the user, such as hashing.
     """
 
+    
     @staticmethod
-    def __getSalt():
-        return os.urandom(16)
+    def __get_bytes_and_str_salt(str_salt: str | None, bcrypt_version: bool = False):
+        if str_salt:
+            bytes_salt = bytes.fromhex(str_salt)
+        elif str_salt is None:
+            if bcrypt_version: 
+                bytes_salt = bcrypt.gensalt()
+            else:
+                bytes_salt = os.urandom(16)
+            str_salt = bytes_salt.hex()
+
+        return bytes_salt, str_salt
+    
+
 
     """ MD5 """
     @staticmethod
-    def hash_md5(password: str, salt: bytes = None):
-        if salt is None:
-            salt = Auth.__getSalt()
+    def hash_md5(password: str, str_salt: str | None = None):
 
-        hashed_password = hashlib.md5(salt + password.encode()).hexdigest()
-        return salt.hex() + hashed_password
+        bytes_salt, str_salt = Auth.__get_bytes_and_str_salt(str_salt)
+
+        hashed_password = hashlib.md5(bytes_salt + password.encode()).hexdigest()
+        return hashed_password, str_salt
 
     """ SHA-512 """
     @staticmethod
-    def hash_sha512(password: str, salt: bytes = None):
-        if salt is None:
-            salt = Auth.__getSalt()
-        hashed_password = hashlib.sha512(salt + password.encode()).hexdigest()
-        return salt.hex() + hashed_password
+    def hash_sha512(password: str, str_salt: str | None = None):
+
+        bytes_salt, str_salt = Auth.__get_bytes_and_str_salt(str_salt)
+
+        hashed_password = hashlib.sha512(bytes_salt + password.encode()).hexdigest()
+        return hashed_password, str_salt
 
     """ PBKDF2 """
     @staticmethod
-    def hash_pbkdf2(password: str, salt: bytes = None):
-        if salt is None:
-            salt = Auth.__getSalt()
-        hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 100000)
-        return salt.hex() + hashed_password.hex()
+    def hash_pbkdf2(password: str, str_salt: str | None = None):
+
+        bytes_salt, str_salt = Auth.__get_bytes_and_str_salt(str_salt)
+
+        hashed_password = hashlib.pbkdf2_hmac('sha256', password.encode(), bytes_salt, 100000)
+        return hashed_password.hex(), str_salt
 
     """ argon2 """
     @staticmethod
-    def hash_argon2(password: str, salt: bytes = None):
-        if salt is None:
-            salt = Auth.__getSalt()
+    def hash_argon2(password: str, str_salt: str | None = None):
+
+        bytes_salt, str_salt = Auth.__get_bytes_and_str_salt(str_salt)
+
         # Use Argon2 low-level API to specify a custom salt
         hashed_password = hash_secret(
             password.encode(),
-            salt,
+            bytes_salt,
             time_cost=2,
             memory_cost=102400,
             parallelism=8,
             hash_len=32,
             type=Type.I
         ).hex()
+
         # Store salt with hash for retrieval
-        return salt.hex() + hashed_password
+        return hashed_password, str_salt
 
     """ bcrypt """
     @staticmethod
-    def hash_bcrypt(password: str, salt: bytes = None):
+    def hash_bcrypt(password: str, str_salt: str | None = None):
 
-        # Generate a salt value
-        if salt is None:
-            salt = bcrypt.gensalt()
+        bytes_salt, str_salt = Auth.__get_bytes_and_str_salt(str_salt, True)
 
         # Convert the password to bytes (bcrypt requires byte input)
         password_bytes = password.encode('utf-8')
 
         # Hash the password with the generated salt
-        hashed_password = bcrypt.hashpw(password_bytes, salt)
+        bytes_hashed_password_and_metadata = bcrypt.hashpw(password_bytes, bytes_salt)
+        bytes_hashed_password = bytes_hashed_password_and_metadata[-31:]
+        str_hashed_password = bytes_hashed_password.hex()
 
-        return  hashed_password, salt
+        return  str_hashed_password, str_salt
 
     """ scrypt """
     @staticmethod
-    def hash_scrypt(password: str, salt: bytes = None):
-        if salt is None:
-            salt = Auth.__getSalt()
-        hashed_password = hashlib.scrypt(password.encode(), salt=salt, n=16384, r=8, p=1).hex()
-        return salt.hex() + hashed_password
+    def hash_scrypt(password: str, str_salt: str | None = None):
+
+        bytes_salt, str_salt = Auth.__get_bytes_and_str_salt(str_salt)
+
+        hashed_password = hashlib.scrypt(password.encode(), salt=bytes_salt, n=16384, r=8, p=1).hex()
+        return hashed_password, str_salt
