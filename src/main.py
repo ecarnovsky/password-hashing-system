@@ -34,7 +34,7 @@ def logged_in_action_loop(user: User):
             break
         elif next_action == '2':
             hashing_algorithm = get_algorithm_user_choice()
-            hashed_password, salt = get_hashed_password(user.plain_text_password, hashing_algorithm)
+            hashed_password, salt = Auth.get_hashed_password(user.plain_text_password, hashing_algorithm)
 
             # Update the username and hashed password in the database
             updated_user = User(user.username, user.plain_text_password, hashing_algorithm.name, hashed_password, salt)
@@ -47,7 +47,7 @@ def logged_in_action_loop(user: User):
             # Prompt the user for a new password
             password = input("Enter a new password: ")
             hashing_algorithm = get_algorithm_user_choice()
-            hashed_password, salt = get_hashed_password(password, hashing_algorithm)
+            hashed_password, salt = Auth.get_hashed_password(password, hashing_algorithm)
 
             # Update the username and hashed password in the database
             updated_user = User(user.username, user.plain_text_password, hashing_algorithm.name, hashed_password, salt)
@@ -80,35 +80,10 @@ def get_user():
             stored_salt= found_user.salt
             password = input("Enter your password: ")
 
+            hashed_inputed_password, _ = Auth.get_hashed_password(password, stored_salt, HashingAlgorithm[found_user.hashing_algorithm] )
+           
             # Verify the password
-            if found_user.hashing_algorithm == HashingAlgorithm.BCRYPT.name:
-                new_password, _ = Auth.hash_bcrypt(password, stored_salt)
-                if stored_password == new_password:
-                    print("Login successful.")
-                    return found_user
-            elif found_user.hashing_algorithm == HashingAlgorithm.SCRYPT.name:
-                new_password, _ = Auth.hash_scrypt(password, stored_salt)
-                if stored_password == new_password:
-                    print("Login successful.")
-                    return found_user
-            elif found_user.hashing_algorithm == HashingAlgorithm.ARGON2.name:
-                new_password, _ = Auth.hash_argon2(password, stored_salt)
-                if stored_password == new_password:
-                    print("Login successful.")
-                    return found_user
-            elif found_user.hashing_algorithm == HashingAlgorithm.PBKDF2.name:
-                new_password, _ = Auth.hash_pbkdf2(password, stored_salt)
-                if stored_password == new_password:
-                    print("Login successful.")
-                    return found_user
-            elif found_user.hashing_algorithm == HashingAlgorithm.SHA512.name:
-                new_password, _ = Auth.hash_sha512(password, stored_salt)
-                if stored_password == new_password:
-                    print("Login successful.")
-                    return found_user
-            elif found_user.hashing_algorithm == HashingAlgorithm.MD5.name:
-                new_password, _ = Auth.hash_md5(password, stored_salt)
-                if stored_password == new_password:
+            if (hashed_inputed_password == stored_password):
                     print("Login successful.")
                     return found_user
             else:
@@ -121,7 +96,7 @@ def get_user():
             password = input("Enter a password: ")
 
             hashing_algorithm = get_algorithm_user_choice()
-            hashed_password, salt = get_hashed_password(password, hashing_algorithm)
+            hashed_password, salt = Auth.get_hashed_password(password, None, hashing_algorithm)
 
             new_user = User(username, password, hashing_algorithm.name, hashed_password, salt)
             DatabaseConnection.add_user(new_user)
@@ -155,31 +130,6 @@ def get_algorithm_user_choice():
         else:
             return HashingAlgorithm(int(choice))
 
-def get_hashed_password(password: str, hashingAlgorithm: HashingAlgorithm):
-    """
-    Returns a hashed password using whatever hashing algorithm is specified.
-    """
-
-    hashed_password = None
-    salt = None
-
-    if hashingAlgorithm == HashingAlgorithm.MD5:
-        hashed_password, salt = Auth.hash_md5(password)
-    elif hashingAlgorithm == HashingAlgorithm.SHA512:
-        hashed_password, salt = Auth.hash_sha512(password)
-    elif hashingAlgorithm == HashingAlgorithm.PBKDF2:
-        hashed_password, salt = Auth.hash_pbkdf2(password)
-    elif hashingAlgorithm == HashingAlgorithm.ARGON2:
-        hashed_password, salt = Auth.hash_argon2(password)
-    elif hashingAlgorithm == HashingAlgorithm.BCRYPT:
-        hashed_password, salt = Auth.hash_bcrypt(password)
-    elif hashingAlgorithm == HashingAlgorithm.SCRYPT:
-        hashed_password, salt = Auth.hash_scrypt(password)
-
-    if hashed_password:
-        return hashed_password, salt
-    else:
-        raise Exception("There was an error with hashing the password.")
 
 if __name__ == "__main__":
     main()

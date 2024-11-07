@@ -3,6 +3,7 @@ from argon2 import PasswordHasher
 from argon2.low_level import hash_secret, Type
 import bcrypt
 import os
+from .hashing_algorithm import HashingAlgorithm
 
 class Auth:
     """
@@ -27,7 +28,7 @@ class Auth:
 
     """ MD5 """
     @staticmethod
-    def hash_md5(password: str, str_salt: str | None = None):
+    def __hash_md5(password: str, str_salt: str | None = None):
 
         bytes_salt, str_salt = Auth.__get_bytes_and_str_salt(str_salt)
 
@@ -36,7 +37,7 @@ class Auth:
 
     """ SHA-512 """
     @staticmethod
-    def hash_sha512(password: str, str_salt: str | None = None):
+    def __hash_sha512(password: str, str_salt: str | None = None):
 
         bytes_salt, str_salt = Auth.__get_bytes_and_str_salt(str_salt)
 
@@ -45,7 +46,7 @@ class Auth:
 
     """ PBKDF2 """
     @staticmethod
-    def hash_pbkdf2(password: str, str_salt: str | None = None):
+    def __hash_pbkdf2(password: str, str_salt: str | None = None):
 
         bytes_salt, str_salt = Auth.__get_bytes_and_str_salt(str_salt)
 
@@ -54,7 +55,7 @@ class Auth:
 
     """ argon2 """
     @staticmethod
-    def hash_argon2(password: str, str_salt: str | None = None):
+    def __hash_argon2(password: str, str_salt: str | None = None):
 
         bytes_salt, str_salt = Auth.__get_bytes_and_str_salt(str_salt)
 
@@ -74,7 +75,7 @@ class Auth:
 
     """ bcrypt """
     @staticmethod
-    def hash_bcrypt(password: str, str_salt: str | None = None):
+    def __hash_bcrypt(password: str, str_salt: str | None = None):
 
         bytes_salt, str_salt = Auth.__get_bytes_and_str_salt(str_salt, True)
 
@@ -90,9 +91,36 @@ class Auth:
 
     """ scrypt """
     @staticmethod
-    def hash_scrypt(password: str, str_salt: str | None = None):
+    def __hash_scrypt(password: str, str_salt: str | None = None):
 
         bytes_salt, str_salt = Auth.__get_bytes_and_str_salt(str_salt)
 
         hashed_password = hashlib.scrypt(password.encode(), salt=bytes_salt, n=16384, r=8, p=1).hex()
         return hashed_password, str_salt
+
+    @staticmethod
+    def get_hashed_password(password: str, salt: str | None, hashingAlgorithm: HashingAlgorithm):
+        """
+        Returns a hashed password using whatever hashing algorithm is specified.
+        """
+
+        hashed_password = None
+
+        if hashingAlgorithm == HashingAlgorithm.MD5:
+            hashed_password, salt = Auth.__hash_md5(password, salt)
+        elif hashingAlgorithm == HashingAlgorithm.SHA512:
+            hashed_password, salt = Auth.__hash_sha512(password, salt)
+        elif hashingAlgorithm == HashingAlgorithm.PBKDF2:
+            hashed_password, salt = Auth.__hash_pbkdf2(password, salt)
+        elif hashingAlgorithm == HashingAlgorithm.ARGON2:
+            hashed_password, salt = Auth.__hash_argon2(password, salt)
+        elif hashingAlgorithm == HashingAlgorithm.BCRYPT:
+            hashed_password, salt = Auth.__hash_bcrypt(password, salt)
+        elif hashingAlgorithm == HashingAlgorithm.SCRYPT:
+            hashed_password, salt = Auth.__hash_scrypt(password, salt)
+
+        if hashed_password:
+            return hashed_password, salt
+        else:
+            raise Exception("There was an error with hashing the password.")
+
