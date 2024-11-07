@@ -36,10 +36,10 @@ def get_user():
             stored_salt= found_user.salt
             password = input("Enter your password: ")
 
-            hashed_inputed_password, _ = Auth.get_hashed_password(password, stored_salt, HashingAlgorithm[found_user.hashing_algorithm] )
+            hashed_inputted_password, _ = Auth.get_hashed_password(password, stored_salt, HashingAlgorithm[found_user.hashing_algorithm] )
            
             # Verify the password
-            if (hashed_inputed_password == stored_password):
+            if (hashed_inputted_password == stored_password):
                 print("Login successful.")
                 return found_user
             else:
