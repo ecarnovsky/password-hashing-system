@@ -101,7 +101,7 @@ class Auth:
     @staticmethod
     def get_hashed_password(password: str, salt: str | None, hashingAlgorithm: HashingAlgorithm):
         """
-        Returns a hashed password using whatever hashing algorithm is specified.
+        Returns a hashed password and salt using whatever hashing algorithm is specified.
         """
 
         hashed_password = None
