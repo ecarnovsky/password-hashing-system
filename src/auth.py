@@ -10,6 +10,8 @@ class Auth:
     """
 
 
+    "All private hashing functions take in bytes and return bytes."
+
     """ MD5 """
     @staticmethod
     def __hash_md5(password: bytes, salt: bytes):
