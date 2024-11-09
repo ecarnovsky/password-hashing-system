@@ -1,8 +1,4 @@
 from enum import Enum
-import nltk
-from nltk.corpus import words
-import random
-
 
 class PasswordUtils:
 
@@ -13,11 +9,6 @@ class PasswordUtils:
 
     def generate_memorable_password():
         password = ""
-        #
-        # nltk.download('words')
-        # word_list = words.words()
-        # short_words = [word for word in word_list if len(word) <= 4]  
-        # print(random.choice(short_words))
         return password
 
     def get_password_strength(password: str):

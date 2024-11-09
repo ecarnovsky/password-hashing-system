@@ -3,6 +3,7 @@ from .user import User
 from .hashing_algorithm import HashingAlgorithm
 from .auth import Auth
 
+
 # Main function
 def main():
 
@@ -32,14 +33,11 @@ def get_user():
         if found_user:
             # Username exists, prompt for password to log in
             print("Username exists. Please log in.")
-            stored_password = found_user.hashed_password
-            stored_salt= found_user.salt
-            password = input("Enter your password: ")
+            entered_password = input("Enter your password: ")
 
-            hashed_inputted_password, _ = Auth.get_hashed_password(password, stored_salt, HashingAlgorithm[found_user.hashing_algorithm] )
+            login_successful = Auth.attemptLogin(found_user, entered_password)
            
-            # Verify the password
-            if (hashed_inputted_password == stored_password):
+            if (login_successful):
                 print("Login successful.")
                 return found_user
             else:
@@ -50,15 +48,12 @@ def get_user():
             # Username is new, prompt to create a password
             print("Username created.")
             password = input("Enter a password: ")
-
             hashing_algorithm = get_algorithm_user_choice()
-            hashed_password, salt = Auth.get_hashed_password(password, None, hashing_algorithm)
 
-            new_user = User(username, password, hashing_algorithm.name, hashed_password, salt)
-            DatabaseConnection.add_user(new_user)
+            new_user = Auth.create_user(username, password, hashing_algorithm)
 
             print("Username and hashed password stored in the database successfully.")
-            print(f"Hashed password: {hashed_password}")
+            print(f"Hashed password: {new_user.hashed_password}")
 
             return new_user
 

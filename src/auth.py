@@ -3,6 +3,8 @@ from argon2.low_level import hash_secret, Type
 import bcrypt
 import os
 from .hashing_algorithm import HashingAlgorithm
+from .user import User
+from .database_connection import DatabaseConnection
 
 class Auth:
     """
@@ -169,3 +171,48 @@ class Auth:
         else:
             raise Exception("There was an error with hashing the password.")
 
+
+
+    @staticmethod
+    def attemptLogin(stored_user: User, entered_password: str):
+        """
+        This function returns True if the passed in password, when hashed with the stored user's 
+        hashing algorithm and salt, matchs the stored user's hash. 
+
+        Args:
+            stored_user (User): The user in the database that matches the username the unauthenticated user inputted.
+            entered_password (str): The password that was just inputted into the system by the unauthenticated user.
+        Returns:
+            True if the user is able to authenticate, False otherwise.
+
+        """
+
+        hashed_entered_password, _ = Auth.get_hashed_password(entered_password, stored_user.salt, HashingAlgorithm[stored_user.hashing_algorithm] )
+
+        if hashed_entered_password == stored_user.hashed_password:
+            return True
+        else: 
+            return False
+
+
+
+    @staticmethod
+    def create_user(username: str, password: str, hashing_algorithm: HashingAlgorithm):
+        """
+        Creates a new user in the database and returns the user object.
+
+        Args:
+            username (str)
+            password (str)
+            hashing_algorithm (HashingAlgorithm)
+        Returns:
+            new_user (User): The user that was just added into the database. 
+
+        """
+        try:
+            hashed_password, salt = Auth.get_hashed_password(password, None, hashing_algorithm)
+            new_user = User(username, password, hashing_algorithm.name, hashed_password, salt)
+            DatabaseConnection.add_user(new_user)
+            return new_user
+        except:
+            print("There was an error creating the user.")
