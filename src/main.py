@@ -2,6 +2,7 @@ from .database_connection import DatabaseConnection
 from .user import User
 from .hashing_algorithm import HashingAlgorithm
 from .auth import Auth
+import getpass
 
 
 # Main function
@@ -38,7 +39,7 @@ def get_user():
         if found_user:
             # Username exists, prompt for password to log in
             print("Username exists. Please log in.")
-            entered_password = input("Enter your password: ")
+            entered_password = getpass.getpass("Enter your password: ")
 
             login_successful = Auth.attemptLogin(found_user, entered_password)
            
@@ -53,7 +54,7 @@ def get_user():
             # Username is new, prompt to create a password
             print("Username created.")
             while True:
-                password = input("Enter a password: ")
+                password = getpass.getpass("Enter a password: ")
                 #password cannot be an empty string
                 if password:
                     break
@@ -99,7 +100,7 @@ def logged_in_action_loop(user: User):
         elif next_action == '3':
             # Prompt the user for a new password
             while True:
-                password = input("Enter a new password: ")
+                password = getpass.getpass("Enter a new password: ")
                 #password cannot be an empty string
                 if password:
                     break
