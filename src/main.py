@@ -2,6 +2,7 @@ from .database_connection import DatabaseConnection
 from .user import User
 from .hashing_algorithm import HashingAlgorithm
 from .auth import Auth
+import getpass
 
 
 # Main function
@@ -27,13 +28,18 @@ def get_user() -> User:
         # Prompt the user for a username
         username = input("Enter a username: ")
 
+        # Check if the username is empty
+        if not username:
+            print("Username cannot be empty. Please enter a valid username.")
+            continue
+
         # Check if the username already exists in the database
         found_user = DatabaseConnection.find_user_by_username(username)
 
         if found_user:
             # Username exists, prompt for password to log in
             print("Username exists. Please log in.")
-            entered_password = input("Enter your password: ")
+            entered_password = getpass.getpass("Enter your password: ")
 
             login_successful = Auth.attemptLogin(found_user, entered_password)
            
@@ -47,7 +53,12 @@ def get_user() -> User:
         elif not found_user:
             # Username is new, prompt to create a password
             print("Username created.")
-            password = input("Enter a password: ")
+            while True:
+                password = getpass.getpass("Enter a password: ")
+                #password cannot be an empty string
+                if password:
+                    break
+                print("Password cannot be empty. Please enter a valid password.")
             hashing_algorithm = get_algorithm_user_choice()
 
             new_user = Auth.create_user(username, password, hashing_algorithm)
@@ -88,7 +99,13 @@ def logged_in_action_loop(user: User):
             print(f"Hashed password: {hashed_password}")
         elif next_action == '3':
             # Prompt the user for a new password
-            password = input("Enter a new password: ")
+            while True:
+                password = getpass.getpass("Enter a new password: ")
+                #password cannot be an empty string
+                if password:
+                    break
+                print("Password cannot be empty. Please enter a valid password.")
+
             hashing_algorithm = get_algorithm_user_choice()
             hashed_password, salt = Auth.get_hashed_password(password, hashing_algorithm)
 
