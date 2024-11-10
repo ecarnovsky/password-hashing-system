@@ -52,7 +52,12 @@ def get_user():
         elif not found_user:
             # Username is new, prompt to create a password
             print("Username created.")
-            password = input("Enter a password: ")
+            while True:
+                password = input("Enter a password: ")
+                #password cannot be an empty string
+                if password:
+                    break
+                print("Password cannot be empty. Please enter a valid password.")
             hashing_algorithm = get_algorithm_user_choice()
 
             new_user = Auth.create_user(username, password, hashing_algorithm)
@@ -93,7 +98,13 @@ def logged_in_action_loop(user: User):
             print(f"Hashed password: {hashed_password}")
         elif next_action == '3':
             # Prompt the user for a new password
-            password = input("Enter a new password: ")
+            while True:
+                password = input("Enter a new password: ")
+                #password cannot be an empty string
+                if password:
+                    break
+                print("Password cannot be empty. Please enter a valid password.")
+
             hashing_algorithm = get_algorithm_user_choice()
             hashed_password, salt = Auth.get_hashed_password(password, hashing_algorithm)
 
