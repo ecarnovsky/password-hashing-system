@@ -2,16 +2,16 @@ from enum import Enum
 
 class PasswordUtils:
 
-    def generate_super_strong_password():
+    def generate_super_strong_password() -> str:
         password = ""
         #
         return password
 
-    def generate_memorable_password():
+    def generate_memorable_password() -> str:
         password = ""
         return password
 
-    def get_password_strength(password: str):
+    def get_password_strength(password: str) -> 'PasswordStrength':
         strength: PasswordStrength = None
         # 
         return strength

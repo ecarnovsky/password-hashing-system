@@ -6,6 +6,7 @@ class DatabaseConnection:
 
     @staticmethod
     def add_user(user: User):
+        
         con = sqlite3.connect(DatabaseConnection._DATABASE_NAME)
         cur = con.cursor()
         cur.execute(
@@ -17,6 +18,7 @@ class DatabaseConnection:
 
     @staticmethod
     def update_user(user: User):
+
         con = sqlite3.connect(DatabaseConnection._DATABASE_NAME)
         cur = con.cursor()
         cur.execute(
@@ -27,7 +29,8 @@ class DatabaseConnection:
         con.close()
 
     @staticmethod
-    def find_user_by_username(username: str):
+    def find_user_by_username(username: str) -> User | None:
+
         con = sqlite3.connect(DatabaseConnection._DATABASE_NAME)
         cur = con.cursor()
         res = cur.execute("SELECT * FROM user WHERE username=?", (username,))
@@ -40,7 +43,7 @@ class DatabaseConnection:
             return User(user_row[0], None, user_row[1], user_row[2], user_row[3])
         
     @staticmethod
-    def delete_user_by_username(username: str):
+    def delete_user_by_username(username: str) -> bool:
         """ Returns true if successful """
 
         con = sqlite3.connect(DatabaseConnection._DATABASE_NAME)

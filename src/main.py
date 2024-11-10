@@ -20,7 +20,7 @@ def main():
 
 
 
-def get_user():
+def get_user() -> User:
     
     while True:
 
@@ -107,7 +107,7 @@ def logged_in_action_loop(user: User):
 
 
 
-def get_algorithm_user_choice():
+def get_algorithm_user_choice() -> int:
     """ 
     Allows the user to input a number to choose what hashing 
     algorithm to use on their password.

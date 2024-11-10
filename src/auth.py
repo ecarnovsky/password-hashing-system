@@ -15,15 +15,15 @@ class Auth:
 
     """ MD5 """
     @staticmethod
-    def __hash_md5(password: bytes, salt: bytes):
+    def __hash_md5(password: bytes, salt: bytes) -> bytes:
         """
         Hashes a password using the MD5 hashing algorithm.
 
         Args: 
-            password (bytes)
-            salt (bytes)
+            password (bytes):
+            salt (bytes):
         Returns:
-            hashed_password (bytes)
+            bytes: The hashed password.
         """
 
         hashed_password = hashlib.md5(salt + password).digest()
@@ -31,15 +31,15 @@ class Auth:
 
     """ SHA-512 """
     @staticmethod
-    def __hash_sha512(password: bytes, salt: bytes):
+    def __hash_sha512(password: bytes, salt: bytes) -> bytes:
         """
         Hashes a password using the SHA-512 hashing algorithm.
 
         Args: 
-            password (bytes)
-            salt (bytes)
+            password (bytes):
+            salt (bytes):
         Returns:
-            hashed_password (bytes)
+            bytes: The hashed password.
         """
 
         hashed_password = hashlib.sha512(salt + password).digest()
@@ -47,15 +47,15 @@ class Auth:
 
     """ PBKDF2 """
     @staticmethod
-    def __hash_pbkdf2(password: bytes, salt: bytes):
+    def __hash_pbkdf2(password: bytes, salt: bytes) -> bytes:
         """
         Hashes a password using the PBKDF2 hashing algorithm.
 
         Args: 
-            password (bytes)
-            salt (bytes)
+            password (bytes):
+            salt (bytes):
         Returns:
-            hashed_password (bytes)
+            bytes: The hashed password.
         """
 
         hashed_password = hashlib.pbkdf2_hmac('sha256', password, salt, 100000)
@@ -63,15 +63,15 @@ class Auth:
 
     """ argon2 """
     @staticmethod
-    def __hash_argon2(password: bytes, salt: bytes):
+    def __hash_argon2(password: bytes, salt: bytes) -> bytes:
         """
         Hashes a password using the Argon2 hashing algorithm.
 
         Args: 
-            password (bytes)
-            salt (bytes)
+            password (bytes):
+            salt (bytes):
         Returns:
-            hashed_password (bytes)
+            bytes: The hashed password.
         """
 
         # Use Argon2 low-level API to specify a custom salt
@@ -89,15 +89,15 @@ class Auth:
 
     """ bcrypt """
     @staticmethod
-    def __hash_bcrypt(password: bytes, salt: bytes):
+    def __hash_bcrypt(password: bytes, salt: bytes) -> bytes:
         """
         Hashes a password using the bcrypt hashing algorithm.
 
         Args: 
-            password (bytes)
-            salt (bytes)
+            password (bytes):
+            salt (bytes):
         Returns:
-            hashed_password (bytes)
+            bytes: The hashed password.
         """
 
         # Hash the password with the generated salt
@@ -108,22 +108,22 @@ class Auth:
 
     """ scrypt """
     @staticmethod
-    def __hash_scrypt(password: bytes, salt: bytes):
+    def __hash_scrypt(password: bytes, salt: bytes) -> bytes:
         """
         Hashes a password using the scrypt hashing algorithm.
 
         Args: 
-            password (bytes)
-            salt (bytes)
+            password (bytes):
+            salt (bytes):
         Returns:
-            hashed_password (bytes)
+            bytes: The hashed password.
         """
 
         hashed_password = hashlib.scrypt(password, salt=salt, n=16384, r=8, p=1)
         return hashed_password
 
     @staticmethod
-    def get_hashed_password(password: str, salt: str | None, hashing_algorithm: HashingAlgorithm):
+    def get_hashed_password(password: str, salt: str | None, hashing_algorithm: HashingAlgorithm) -> tuple[str, str]:
         """
         Returns a hashed password and salt using whatever hashing algorithm is specified.
 
@@ -132,9 +132,7 @@ class Auth:
             salt (str | None): The salt to be used during the hashing. If None is passed in, a random salt will be generated.
             hashing_algorithm (HashingAlgorith): The hashing algorithm to be used on the password.
         Returns:
-            tuple:
-                hashed_password (str): The resulting hashed password.
-                salt (str): The salt during the hashing process.
+            tuple[str, str]: The resulting hashed password and the salt used during the hashing process.
         """
 
         # Changes the password and salt to bytes. If no salt
@@ -174,7 +172,7 @@ class Auth:
 
 
     @staticmethod
-    def attemptLogin(stored_user: User, entered_password: str):
+    def attemptLogin(stored_user: User, entered_password: str) -> bool:
         """
         This function returns True if the passed in password, when hashed with the stored user's 
         hashing algorithm and salt, matchs the stored user's hash. 
@@ -183,7 +181,7 @@ class Auth:
             stored_user (User): The user in the database that matches the username the unauthenticated user inputted.
             entered_password (str): The password that was just inputted into the system by the unauthenticated user.
         Returns:
-            True if the user is able to authenticate, False otherwise.
+            bool: True if the user is able to authenticate, False otherwise.
 
         """
 
@@ -197,16 +195,16 @@ class Auth:
 
 
     @staticmethod
-    def create_user(username: str, password: str, hashing_algorithm: HashingAlgorithm):
+    def create_user(username: str, password: str, hashing_algorithm: HashingAlgorithm) -> User:
         """
         Creates a new user in the database and returns the user object.
 
         Args:
-            username (str)
-            password (str)
-            hashing_algorithm (HashingAlgorithm)
+            username (str):
+            password (str):
+            hashing_algorithm (HashingAlgorithm):
         Returns:
-            new_user (User): The user that was just added into the database. 
+            User: The user that was just added into the database. 
 
         """
         try:
