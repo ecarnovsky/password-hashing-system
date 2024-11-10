@@ -62,7 +62,7 @@ class DatabaseConnection:
         cur = con.cursor()
         cur.execute("""
             CREATE TABLE IF NOT EXISTS user (
-                username TEXT NOT NULL,
+                username TEXT NOT NULL PRIMARY KEY,
                 hashing_algorithm TEXT,
                 hashed_password TEXT,
                 salt TEXT
