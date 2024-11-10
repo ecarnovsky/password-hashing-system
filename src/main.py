@@ -107,7 +107,7 @@ def logged_in_action_loop(user: User):
                 print("Password cannot be empty. Please enter a valid password.")
 
             hashing_algorithm = get_algorithm_user_choice()
-            hashed_password, salt = Auth.get_hashed_password(password, hashing_algorithm)
+            hashed_password, salt = Auth.get_hashed_password(password, None, hashing_algorithm)
 
             # Update the username and hashed password in the database
             updated_user = User(user.username, user.plain_text_password, hashing_algorithm.name, hashed_password, salt)
