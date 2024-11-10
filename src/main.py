@@ -27,6 +27,11 @@ def get_user():
         # Prompt the user for a username
         username = input("Enter a username: ")
 
+        # Check if the username is empty
+        if not username:
+            print("Username cannot be empty. Please enter a valid username.")
+            continue
+
         # Check if the username already exists in the database
         found_user = DatabaseConnection.find_user_by_username(username)
 
