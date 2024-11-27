@@ -66,8 +66,7 @@ def get_user() -> User:
 
             hashing_algorithm = get_algorithm_user_choice()
             hashed_password, salt = Auth.get_hashed_password(password, None, hashing_algorithm)
-
-            new_user = User(username, password, hashing_algorithm.name, hashed_password, salt.hex() if salt else None)
+            new_user = User(username, password, hashing_algorithm.name, hashed_password, salt.hex() if isinstance(salt, bytes) else salt)
             DatabaseConnection.add_user(new_user)
 
             print("Username and hashed password stored in the database successfully.")
