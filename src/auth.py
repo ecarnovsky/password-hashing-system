@@ -5,6 +5,7 @@ import os
 from .hashing_algorithm import HashingAlgorithm
 from .user import User
 from .database_connection import DatabaseConnection
+from typing import Union, Tuple
 
 class Auth:
     """
@@ -123,7 +124,7 @@ class Auth:
         return hashed_password
 
     @staticmethod
-    def get_hashed_password(password: str, salt: str | None, hashing_algorithm: HashingAlgorithm) -> tuple[str, str]:
+    def get_hashed_password(password: str, salt: Union[str, None], hashing_algorithm: HashingAlgorithm) -> Tuple[str, str]:
         """
         Returns a hashed password and salt using whatever hashing algorithm is specified.
 

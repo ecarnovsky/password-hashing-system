@@ -4,29 +4,27 @@ from .hashing_algorithm import HashingAlgorithm
 from .auth import Auth
 import getpass
 
-
 # Main function
 def main():
+    """
+    Contains two main loops. The outer loop runs when the user is not 
+    logged in, and handles getting their username and password.
+    The inner loop runs after the user is logged in. Its asks 
+    them what their next action will be, such as logging out or 
+    changing their password.
+    """
 
     # Ensure the user table exists
     DatabaseConnection.create_user_table_if_not_exist()
 
     while True:
-
         user = get_user()
         logged_in_action_loop(user)
 
-
-
-
-
-
 def get_user() -> User:
-    
     while True:
-
         # Prompt the user for a username
-        username = input("Enter a username: ")
+        username = input("Enter a username: ").strip()
 
         # Check if the username is empty
         if not username:
@@ -39,43 +37,46 @@ def get_user() -> User:
         if found_user:
             # Username exists, prompt for password to log in
             print("Username exists. Please log in.")
-            entered_password = getpass.getpass("Enter your password: ")
+            while True:
+                entered_password = getpass.getpass("Enter your password: ").strip()
+                if not entered_password:
+                    print("Password cannot be empty. Please enter a valid password.")
+                    continue
+                break
 
             login_successful = Auth.attemptLogin(found_user, entered_password)
            
-            if (login_successful):
+            if login_successful:
                 print("Login successful.")
+                found_user.plain_text_password = entered_password  # Ensure plain_text_password is set
                 return found_user
             else:
                 print("Incorrect password. Try again.")
                 continue
 
-        elif not found_user:
+        else:
             # Username is new, prompt to create a password
             print("Username created.")
             while True:
-                password = getpass.getpass("Enter a password: ")
-                #password cannot be an empty string
-                if password:
-                    break
-                print("Password cannot be empty. Please enter a valid password.")
-            hashing_algorithm = get_algorithm_user_choice()
+                password = getpass.getpass("Enter a password: ").strip()
+                if not password:
+                    print("Password cannot be empty. Please enter a valid password.")
+                    continue
+                break
 
-            new_user = Auth.create_user(username, password, hashing_algorithm)
+            hashing_algorithm = get_algorithm_user_choice()
+            hashed_password, salt = Auth.get_hashed_password(password, None, hashing_algorithm)
+
+            new_user = User(username, password, hashing_algorithm.name, hashed_password, salt.hex() if salt else None)
+            DatabaseConnection.add_user(new_user)
 
             print("Username and hashed password stored in the database successfully.")
-            print(f"Hashed password: {new_user.hashed_password}")
+            print(f"Hashed password: {hashed_password}")
 
             return new_user
 
-
-
-
-
 def logged_in_action_loop(user: User):
-
     while True:
-
         # If the user successfully logs in or creates an account, present the options
         print("Do you want to:")
         print("1. Log out")
@@ -88,7 +89,10 @@ def logged_in_action_loop(user: User):
             break
         elif next_action == '2':
             hashing_algorithm = get_algorithm_user_choice()
-            hashed_password, salt = Auth.get_hashed_password(user.plain_text_password, hashing_algorithm)
+            if user.plain_text_password is None:
+                print("Error: No plain text password available.")
+                continue
+            hashed_password, salt = Auth.get_hashed_password(user.plain_text_password, None, hashing_algorithm)
 
             # Update the username and hashed password in the database
             updated_user = User(user.username, user.plain_text_password, hashing_algorithm.name, hashed_password, salt)
@@ -100,17 +104,16 @@ def logged_in_action_loop(user: User):
         elif next_action == '3':
             # Prompt the user for a new password
             while True:
-                password = getpass.getpass("Enter a new password: ")
-                #password cannot be an empty string
-                if password:
-                    break
-                print("Password cannot be empty. Please enter a valid password.")
-
+                password = getpass.getpass("Enter a new password: ").strip()
+                if not password:
+                    print("Password cannot be empty. Please enter a valid password.")
+                    continue
+                break
             hashing_algorithm = get_algorithm_user_choice()
             hashed_password, salt = Auth.get_hashed_password(password, None, hashing_algorithm)
 
             # Update the username and hashed password in the database
-            updated_user = User(user.username, user.plain_text_password, hashing_algorithm.name, hashed_password, salt)
+            updated_user = User(user.username, password, hashing_algorithm.name, hashed_password, salt)
             DatabaseConnection.update_user(updated_user)
 
             # Output the hashed password
@@ -119,10 +122,6 @@ def logged_in_action_loop(user: User):
         else:
             print("Invalid choice, please try again.")
             continue
-
-
-
-
 
 def get_algorithm_user_choice() -> int:
     """ 
@@ -145,7 +144,6 @@ def get_algorithm_user_choice() -> int:
             print("Invalid choice")
         else:
             return HashingAlgorithm(int(choice))
-
 
 if __name__ == "__main__":
     main()

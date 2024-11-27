@@ -1,5 +1,6 @@
 import sqlite3
 from .user import User
+from typing import Union
 
 class DatabaseConnection:
     _DATABASE_NAME = "password-hashing.db"
@@ -29,7 +30,7 @@ class DatabaseConnection:
         con.close()
 
     @staticmethod
-    def find_user_by_username(username: str) -> User | None:
+    def find_user_by_username(username: str) -> Union[User, None]:
 
         con = sqlite3.connect(DatabaseConnection._DATABASE_NAME)
         cur = con.cursor()
